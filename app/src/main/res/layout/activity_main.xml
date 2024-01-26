@@ -17,38 +17,38 @@
         app:srcCompat="@drawable/imagine_dragons_evolve" />
 
     <ImageButton
-        android:id="@+id/imageButton"
+        android:id="@+id/btnPlay"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginTop="32dp"
         android:background="@null"
         android:scaleType="fitCenter"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton2"
+        app:layout_constraintEnd_toStartOf="@+id/btnPause"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/iv_album"
-        app:srcCompat="@drawable/skip_back" />
+        app:srcCompat="@drawable/play" />
 
     <ImageButton
-        android:id="@+id/imageButton2"
+        android:id="@+id/btnPause"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginTop="32dp"
         android:background="@null"
         android:scaleType="fitCenter"
-        app:layout_constraintEnd_toStartOf="@+id/imageButton3"
-        app:layout_constraintStart_toEndOf="@+id/imageButton"
+        app:layout_constraintEnd_toStartOf="@+id/btnPrevious"
+        app:layout_constraintStart_toEndOf="@+id/btnPlay"
         app:layout_constraintTop_toBottomOf="@+id/iv_album"
         app:srcCompat="@drawable/pause" />
 
     <ImageButton
-        android:id="@+id/imageButton3"
+        android:id="@+id/btnPrevious"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_marginTop="32dp"
         android:background="@null"
         android:scaleType="fitCenter"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageButton2"
+        app:layout_constraintStart_toEndOf="@+id/btnPause"
         app:layout_constraintTop_toBottomOf="@+id/iv_album"
         app:srcCompat="@drawable/skip_fwd" />
 </androidx.constraintlayout.widget.ConstraintLayout>
