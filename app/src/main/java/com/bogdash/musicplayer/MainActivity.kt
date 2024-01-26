@@ -33,8 +33,29 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-        }
 
+            btnNext.setOnClickListener {
+                if (serviceBound) {
+                    musicPlayerService.next()
+                    if (musicPlayerService.isPlaying()) {
+                        btnPlayPause.setImageResource(R.drawable.pause)
+                    } else {
+                        btnPlayPause.setImageResource(R.drawable.play)
+                    }
+                }
+            }
+
+            btnPrevious.setOnClickListener {
+                if (serviceBound) {
+                    musicPlayerService.previous()
+                    if (musicPlayerService.isPlaying()) {
+                        btnPlayPause.setImageResource(R.drawable.pause)
+                    } else {
+                        btnPlayPause.setImageResource(R.drawable.play)
+                    }
+                }
+            }
+        }
     }
 
     private val connection = object : ServiceConnection {
