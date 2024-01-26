@@ -22,17 +22,19 @@ class MainActivity : AppCompatActivity() {
         bindService(intent, connection, Context.BIND_AUTO_CREATE)
 
         binding.apply {
-            btnPlay.setOnClickListener {
+            btnPlayPause.setOnClickListener {
                 if (serviceBound) {
-                    musicPlayerService.play()
-                }
-            }
-            btnPause.setOnClickListener {
-                if (serviceBound) {
-                    musicPlayerService.pause()
+                    if (musicPlayerService.isPlaying()) {
+                        musicPlayerService.pause()
+                        btnPlayPause.setImageResource(R.drawable.play)
+                    } else {
+                        musicPlayerService.play()
+                        btnPlayPause.setImageResource(R.drawable.pause)
+                    }
                 }
             }
         }
+
     }
 
     private val connection = object : ServiceConnection {
