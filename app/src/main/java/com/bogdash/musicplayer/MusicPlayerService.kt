@@ -7,84 +7,83 @@ import android.os.Binder
 import android.os.IBinder
 
 class MusicPlayerService : Service() {
-    private var mediaPlayer: MediaPlayer? = null
-    private var mediaPlayers = mutableListOf<MediaPlayer>()
-    private val binder = LocalBinder()
+    private lateinit var mediaPlayer: MediaPlayer
+    private var songs = mutableListOf<Int>()
+    private val binder: IBinder = MusicBinder()
     private var currentIndex = 0
+    var isPlaying: Boolean = false
 
-    inner class LocalBinder : Binder() {
+    companion object {
+        const val ACTION_PAUSE = "PAUSE"
+        const val ACTION_PLAY = "PLAY"
+        const val ACTION_NEXT = "NEXT"
+        const val ACTION_PREVIOUS = "PREVIOUS"
+    }
+    inner class MusicBinder : Binder() {
         fun getService(): MusicPlayerService = this@MusicPlayerService
     }
 
     override fun onCreate() {
         super.onCreate()
-        mediaPlayers.add(MediaPlayer.create(this, R.raw.josh_levi_if_the_world))
-        mediaPlayers.add(MediaPlayer.create(this, R.raw.moon_crystals))
-        mediaPlayers.add(MediaPlayer.create(this, R.raw.imagine_dragons_radioactive))
-        mediaPlayers.add(MediaPlayer.create(this, R.raw.muse_pressure))
-        mediaPlayers.add(MediaPlayer.create(this, R.raw.the_hunna_i_wanna_know))
-    }
 
-    fun play() {
-        if (mediaPlayers.isEmpty()) {
-            return
-        }
-        if (currentIndex >= mediaPlayers.size) {
-            currentIndex = 0
-        }
-        if (mediaPlayer?.isPlaying == true) {
-            mediaPlayer?.reset()
-        }
-        mediaPlayer = mediaPlayers[currentIndex]
-        if ((mediaPlayer?.duration ?: 0) > 0) {
-            mediaPlayer?.start()
-        } else {
-            mediaPlayer?.setOnPreparedListener {
-                it.start()
-            }
-            mediaPlayer?.prepareAsync()
-        }
-    }
+        songs = mutableListOf(
+            R.raw.josh_levi_if_the_world,
+            R.raw.muse_pressure,
+            R.raw.moon_crystals,
+            R.raw.the_hunna_i_wanna_know,
+            R.raw.imagine_dragons_radioactive)
 
-    fun pause() {
-        if (currentIndex < mediaPlayers.size) {
-            val mediaPlayer = mediaPlayers[currentIndex]
-            if (mediaPlayer.isPlaying) {
-                mediaPlayer.pause()
-            }
-        }
-    }
-
-    fun isPlaying(): Boolean {
-        return currentIndex < mediaPlayers.size && mediaPlayers[currentIndex].isPlaying
-    }
-
-    fun next() {
-        currentIndex++
-        if (currentIndex >= mediaPlayers.size) {
-            currentIndex = 0
-        }
-        play()
-    }
-
-    fun previous() {
-        currentIndex--
-        if (currentIndex < 0) {
-            currentIndex = mediaPlayers.size - 1
-        }
-        play()
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return START_STICKY
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mediaPlayers.forEach { it.stop() }
+        mediaPlayer = MediaPlayer.create(this,songs[currentIndex])
     }
 
     override fun onBind(intent: Intent?): IBinder {
         return binder
     }
+
+    fun previous() {
+        changeTrack((currentIndex + songs.size - 1) % songs.size)
+    }
+
+    fun next() {
+        changeTrack((currentIndex + 1) % songs.size)
+    }
+
+    fun play() {
+        if (!isPlaying) {
+            mediaPlayer.start()
+            isPlaying = true
+        }
+    }
+
+    fun pause() {
+        if (isPlaying) {
+            mediaPlayer.pause()
+            isPlaying = false
+        }
+    }
+
+
+    private fun changeTrack(index: Int) {
+        if (index in songs.indices) {
+            currentIndex = index
+            mediaPlayer.stop()
+            mediaPlayer = MediaPlayer.create(this, songs[currentIndex])
+            mediaPlayer.start()
+            isPlaying = true
+        }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_PLAY -> play()
+            ACTION_PAUSE -> pause()
+            ACTION_NEXT -> next()
+            ACTION_PREVIOUS -> previous()
+        }
+
+        return START_STICKY
+    }
+
+
+
 }
