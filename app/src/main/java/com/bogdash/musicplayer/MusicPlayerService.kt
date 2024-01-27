@@ -9,8 +9,8 @@ import android.os.IBinder
 class MusicPlayerService : Service() {
     private lateinit var mediaPlayer: MediaPlayer
     private var songs = mutableListOf<Int>()
-    private val binder: IBinder = MusicBinder()
     private var currentIndex = 0
+    private val binder: IBinder = MusicBinder()
     var isPlaying: Boolean = false
 
     companion object {
@@ -40,12 +40,25 @@ class MusicPlayerService : Service() {
         return binder
     }
 
-    fun previous() {
-        changeTrack((currentIndex + songs.size - 1) % songs.size)
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        when (intent?.action) {
+            ACTION_PLAY -> play()
+            ACTION_PAUSE -> pause()
+            ACTION_NEXT -> next()
+            ACTION_PREVIOUS -> previous()
+        }
+
+        return START_STICKY
     }
 
-    fun next() {
-        changeTrack((currentIndex + 1) % songs.size)
+    private fun changeTrack(index: Int) {
+        if (index in songs.indices) {
+            currentIndex = index
+            mediaPlayer.stop()
+            mediaPlayer = MediaPlayer.create(this, songs[currentIndex])
+            mediaPlayer.start()
+            isPlaying = true
+        }
     }
 
     fun play() {
@@ -62,28 +75,11 @@ class MusicPlayerService : Service() {
         }
     }
 
-
-    private fun changeTrack(index: Int) {
-        if (index in songs.indices) {
-            currentIndex = index
-            mediaPlayer.stop()
-            mediaPlayer = MediaPlayer.create(this, songs[currentIndex])
-            mediaPlayer.start()
-            isPlaying = true
-        }
+    fun previous() {
+        changeTrack((currentIndex + songs.size - 1) % songs.size)
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
-            ACTION_PLAY -> play()
-            ACTION_PAUSE -> pause()
-            ACTION_NEXT -> next()
-            ACTION_PREVIOUS -> previous()
-        }
-
-        return START_STICKY
+    fun next() {
+        changeTrack((currentIndex + 1) % songs.size)
     }
-
-
-
 }
