@@ -11,3 +11,4 @@
 
 ## Screenshots
 
+<img src="https://github.com/bogdash/MusicPlayer/blob/dev/Screenshots/1.png" width="300"> <img src="https://github.com/bogdash/MusicPlayer/blob/dev/Screenshots/2.png" width="300">
